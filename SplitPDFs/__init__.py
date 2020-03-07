@@ -19,13 +19,13 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     file_data = base64.decodebytes(file_content.encode())
 
     # Generate date time object of the run
-    dt = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+    dt = datetime.datetime.now().strftime('%Y-%m-%dT%H-%M-%S')
 
     # Extract original PDF file name
     pdf_prefix_file_name = ''.join(file_name.split('.pdf')[:1]) + '_'
     
     # Open multi-page PDF file
-    with io.BytesIO(decoded) as open_pdf_file:
+    with io.BytesIO(file_data) as open_pdf_file:
         read_pdf = PyPDF2.PdfFileReader(open_pdf_file)
 
         # Extract each page and write out to individual files
