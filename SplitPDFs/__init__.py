@@ -3,6 +3,7 @@ import base64
 import io
 import PyPDF2
 import json
+import os
 import datetime
 import azure.functions as func
 
@@ -23,6 +24,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     # Extract original PDF file name
     pdf_prefix_file_name = ''.join(file_name.split('.pdf')[:1]) + '_'
+
+    # Establish HOME directory for writing/reading temporary files
+    HOME_LOCAL_DIR = os.environ['HOME']
+    logging.info(f"HOME_DATA_DIR: {HOME_LOCAL_DIR}")
     
     # Open multi-page PDF file
     with io.BytesIO(file_data) as open_pdf_file:
@@ -36,11 +41,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             
             # Temporarily write PDF to disk
             temp_pdf_fn = pdf_prefix_file_name + str(i + 1) + '_' + dt + str(".pdf")
-            with open(temp_pdf_fn, "wb") as outputStream:
+            temp_pdf_fp = os.path.join(HOME_LOCAL_DIR, temp_pdf_fn)
+            with open(temp_pdf_fp, "wb") as outputStream:
                 output.write(outputStream)
 
             # Read back in the PDF to get the bytes-like version
-            with open(temp_pdf_fn, 'rb') as temp_pdf_file:
+            with open(temp_pdf_fp, 'rb') as temp_pdf_file:
                 file_data = base64.b64encode(temp_pdf_file.read()).decode()
 
                 # Record the filename and the bytes-like data of single-page PDF
