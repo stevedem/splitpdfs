@@ -31,13 +31,13 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     
     # Open multi-page PDF file
     with io.BytesIO(file_data) as open_pdf_file:
-        read_pdf = PyPDF2.PdfFileReader(open_pdf_file)
+        read_pdf = PyPDF2.PdfReader(open_pdf_file)
 
         # Extract each page and write out to individual files
         pdf_list = []
-        for i in range(read_pdf.numPages):
-            output = PyPDF2.PdfFileWriter()
-            output.addPage(read_pdf.getPage(i))
+        for i in range(len(read_pdf.pages)):
+            output = PyPDF2.PdfWriter()
+            output.add_page(read_pdf.pages[i])
             
             # Temporarily write PDF to disk
             temp_pdf_fn = pdf_prefix_file_name + str(i + 1) + '_' + dt + str(".pdf")
